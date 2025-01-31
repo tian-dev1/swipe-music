@@ -36,7 +36,7 @@ async function login(req, res) {
 // Register a new user
 async function register(req, res) {
     try {
-        const { name, lastName, email, password, role, status, imagen, list } = req.body;
+        const { name, lastName, email, password, role, imagen, list, status } = req.body;
 
         // Verificar si el usuario ya existe
         const existingUser = await User.findOne({ email });
@@ -50,7 +50,7 @@ async function register(req, res) {
         const hashedPassword = await bcrypt.hash(password, salt);
         
         // Crear un nuevo usuario
-        const newUser = new User({name, lastName, email, password: hashedPassword, role, status, imagen, list});
+        const newUser = new User({name, lastName, email, password: hashedPassword, role, imagen, list, status});
         console.log("newUser", newUser);
         // Guardar en la base de datos
         const userStored = await newUser.save();
@@ -65,7 +65,7 @@ async function register(req, res) {
 // List all users
 async function list(req, res) {
     try {
-        const users = await User.find();
+        const users = await User.find().select("-password");
         res.json(users);
     } catch (err) {
         console.error(err);
@@ -75,7 +75,6 @@ async function list(req, res) {
 // Update a user
 async function update(req, res) {
     try {
-        const { name, lastName, email, password, role, ststus, imagen, list } = req.body;
         const user = await User.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ message: "Usuario no encontrado" });
@@ -94,6 +93,7 @@ async function update(req, res) {
             if (req.body[key] !== undefined) {
                 user[key] = req.body[key];
             }
+            user.updatedAt = Date.now();
         });
 
         await user.save();
