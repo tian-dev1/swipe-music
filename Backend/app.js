@@ -18,8 +18,8 @@ app.get("/", (req, res) => {
   res.json({ message: "¡Hola, Express!" });
 });
 
-app.use("/api/user", userRoutes);
-app.use("/api/song", songRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/songs", songRoutes);
 
 
 
