@@ -1,4 +1,13 @@
 module.exports = {
+    SERVER_LOGS:{
+        MONGO_CONNECTED: "🟢 Connected to MongoDB",
+        MONGO_ERROR: "🔴 Error connecting to MongoDB",
+        INFO_SERVER_RUNNING: "🚀 Server running in port: ",
+    },
+    ROLES:{
+        ADMIN: "admin",
+        USER: "user"
+    },
     AUTH_MESSAGES: {
         ERROR_401: "Access denied. There is no token or it has expired",
         ERROR_403: "Access denied",

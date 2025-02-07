@@ -1,18 +1,17 @@
 const mongoose = require("mongoose");
 const app = require("./app");
+const CONSTANTS = require("./utils/constants");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
-
-
 mongoose.connect(MONGO_URI)
 .then(() => {
-    console.log("🟢 Conectado a MongoDB");
+    console.log(CONSTANTS.SERVER_LOGS.MONGO_CONNECTED);
     app.listen(PORT, () => {
-        console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+        console.log(`${CONSTANTS.SERVER_LOGS.INFO_SERVER_RUNNING} ${PORT}`);
     });
 }).catch((error) => {
-    console.log("🔴 Error al conectar a MongoDB", error);
+    console.log(`${CONSTANTS.SERVER_LOGS.MONGO_ERROR}`, error);
 });

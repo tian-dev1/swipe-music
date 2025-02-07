@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/users", userRoutes);
-app.use("/api/songs", songRoutes);
+//app.use("/api/songs", songRoutes);
 
 // Configurar Swagger
 swaggerDocs(app);
