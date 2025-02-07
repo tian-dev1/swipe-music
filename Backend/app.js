@@ -1,4 +1,5 @@
 const express = require("express");
+const swaggerDocs = require('./config/swagger'); // Importa la configuración de Swagger
 const cors = require("cors");
 const morgan = require("morgan");
 
@@ -21,6 +22,8 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/songs", songRoutes);
 
+// Configurar Swagger
+swaggerDocs(app);
 
 
 module.exports=app;

@@ -1,11 +1,14 @@
 const jwt = require("jsonwebtoken");
+const { sendError } = require("../utils/utils");
+const { AUTH_MESSAGES } = require('../utils/constants');
 
 function authMiddleware(req, res, next) {
     // 1️⃣ Obtener el token del header
     const token = req.header("Authorization");
 
     if (!token) {
-        return res.status(401).json({ message: "Acceso denegado. No hay token" });
+        return sendError(res, AUTH_MESSAGES.ERROR_401, 401);
+        //return res.status(401).json({ message: "Acceso denegado. No hay token o ha expirado" });
     }
 
     try {
@@ -17,14 +20,16 @@ function authMiddleware(req, res, next) {
         
         next(); // Continuar con la siguiente función
     } catch (err) {
-        res.status(401).json({ message: "Token inválido o expirado" });
+        return sendError(res, AUTH_MESSAGES.ERROR_401, 401);
+        //res.status(401).json({ message: "Acceso denegado. No hay token o ha expirado" });
     }
 }
 
 function roleMiddleware(role) {
     return (req, res, next) => {
         if (req.user.role !== role) {
-            return res.status(403).json({ message: "Acceso denegado" });
+            return sendError(res, AUTH_MESSAGES.ERROR_403, 403);
+            //return res.status(403).json({ message: "Acceso denegado" });
         }
         next();
     };

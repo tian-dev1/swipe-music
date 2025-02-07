@@ -1,75 +1,95 @@
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const User = require('../models/user');
-
+const { sendSuccess, sendError, validateLoginInput, generateToken, sanitizeUser, validateRegisterInput, hashPassword } = require('../utils/utils');
+const { USER_MESSAGES } = require('../utils/constants');
 // Login
 async function login(req, res) {
-    try{
+    try {
         const { email, password } = req.body;
-        //buscar usuario por email
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
+        // Validar campos de entrada en el login
+        const validation = validateLoginInput(email, password);
+        if (!validation.valid) {
+            return sendError(res, USER_MESSAGES.ERROR_400, 400);
         }
-
+        // Buscar usuario por email
+        const user = await User.findOne({ email, status: true });
+        if (!user) {
+            return sendError(res, USER_MESSAGES.ERROR_404, 404);
+        }
+        // Comparar contraseña
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ message: "Contraseña incorrecta" });
+            return sendError(res, USER_MESSAGES.ERROR_401, 401);
         }
-
-        //Generar token JWT
-        const token = jwt.sign(
-            { id: user._id, email: user.email, role: user.role }, 
-            process.env.JWT_SECRET, 
-            { expiresIn: "7d" } // Token válido por 7 días
-        );
-
-        res.json({ message: "Login exitoso", token, user });
-    
-    
-    
+        // Generar token JWT
+        const token = generateToken(user);
+        return sendSuccess(res, USER_MESSAGES.SUCCESS_200, { token, user: sanitizeUser(user) });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Error al iniciar sesión" });
+        return sendError(res, USER_MESSAGES.ERROR_500);
     }
 }
 // Register a new user
 async function register(req, res) {
     try {
-        const { name, lastName, email, password, role, imagen, list, status } = req.body;
+        const { name, lastName, email, password, role, birthdate, imagen, list, status } = req.body;
+        // Validar campos de entrada
+        const validation = validateRegisterInput(name, lastName, email, password, role, birthdate);
+        if (!validation.valid) {
+            return sendError(res, USER_MESSAGES.ERROR_400, 400);
+        }
 
         // Verificar si el usuario ya existe
         const existingUser = await User.findOne({ email });
-
         if (existingUser) {
-            return res.status(400).json({ message: "El usuario ya existe" });
+            return sendError(res, USER_MESSAGES.ERROR_409, 409);
         }
-        
+
         // Encriptar la contraseña antes de guardarla
-        const salt = await bcrypt.genSalt(10); // Generar "sal" para hacer más segura la encriptación
-        const hashedPassword = await bcrypt.hash(password, salt);
-        
+        const hashedPassword = await hashPassword(password);
+
         // Crear un nuevo usuario
-        const newUser = new User({name, lastName, email, password: hashedPassword, role, imagen, list, status});
-        console.log("newUser", newUser);
+        const newUser = new User({
+            name,
+            lastName,
+            email,
+            password: hashedPassword,
+            role,
+            birthdate,
+            imagen,
+            list,
+            status
+        });
+
         // Guardar en la base de datos
         const userStored = await newUser.save();
-
-        res.status(201).json({ message: "Usuario Creado", user: userStored });
-
+        return sendSuccess(res, USER_MESSAGES.SUCCESS_201, { user: sanitizeUser(userStored) }, 201);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Error al procesar la solicitud" });
+        return sendError(res, USER_MESSAGES.ERROR_500);
     }
 }
 // List all users
 async function list(req, res) {
     try {
         const users = await User.find().select("-password");
-        res.json(users);
+        return sendSuccess(res, USER_MESSAGES.SUCCESS_200, { users });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Error al procesar la solicitud" });
+        return sendError(res, USER_MESSAGES.ERROR_500);
+    }
+}
+// Get a user by id
+async function getById(req, res) {
+    try {
+        const user = await User.findById(req.params.id).select("-password");
+        if (!user) {
+            return sendError(res, USER_MESSAGES.ERROR_404, 404);
+        }
+        return sendSuccess(res, USER_MESSAGES.SUCCESS_200, { user });
+    } catch (err) {
+        console.error(err);
+        return sendError(res, USER_MESSAGES.ERROR_500);
     }
 }
 // Update a user
@@ -77,17 +97,8 @@ async function update(req, res) {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
+            return sendError(res, USER_MESSAGES.ERROR_404, 404);
         }
-        
-        // if (name !== undefined) user.name = name;
-        // if (lastName !== undefined) user.lastName = lastName;
-        // if (email !== undefined) user.email = email;
-        // if (password !== undefined) user.password = password;
-        // if (role !== undefined) user.role = role;
-        // if (imagen !== undefined) user.imagen = imagen;
-        // if (list !== undefined) user.list = list;
-
         // Recorrer las claves del body y actualizar solo las que existen
         Object.keys(req.body).forEach((key) => {
             if (req.body[key] !== undefined) {
@@ -95,12 +106,11 @@ async function update(req, res) {
             }
             user.updatedAt = Date.now();
         });
-
         await user.save();
-        res.json({ message: "Usuario actualizado", user });
+        return sendSuccess(res, USER_MESSAGES.SUCCESS_200, { user: sanitizeUser(user) });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Error al procesar la solicitud" });
+        return sendError(res, USER_MESSAGES.ERROR_500);
     }
 }
 // Delete a user
@@ -108,15 +118,15 @@ async function remove(req, res) {
     try {
         const user = await User.findByIdAndDelete(req.params.id);
         if (!user) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
+            return sendError(res, USER_MESSAGES.ERROR_404, 404);
         }
-        res.json({ message: "Usuario eliminado correctamente", user });
+        return sendSuccess(res, USER_MESSAGES.SUCCESS_200, { user });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: "Error al eliminar el usuario" });
-        }
+        return sendError(res, USER_MESSAGES.ERROR_500);
+    }
 }
 
 module.exports = {
-    login, register, list, update, remove
+    login, register, list, getById, update, remove
 }
