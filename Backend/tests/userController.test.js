@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const userRoutes = require('../routes/userRoutes');
-require('dotenv').config({ path: '.env.test' });
+require('dotenv').config({ path: '.env.development' });
 
 const app = express();
 app.use(express.json());
@@ -25,7 +25,7 @@ beforeAll(async () => {
     birthdate: '1990-01-01',
     status: true
   });
-  const jwtSecret = process.env.JWT_SECRET || 'TEST_SWIPE_MUSIC';
+  const jwtSecret = process.env.JWT_SECRET || 'SWIPE_MUSIC';
   // Generar un token JWT para el usuario de prueba
   token = jwt.sign(
     { id: user._id, email: user.email, role: user.role },
