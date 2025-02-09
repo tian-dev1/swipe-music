@@ -7,7 +7,6 @@ const app = express();
 
 //Routes
 const userRoutes = require("./routes/userRoutes");
-const songRoutes = require("./routes/songRoutes");
 
 // Middlewares
 app.use(express.json()); // Para leer JSON en las peticiones

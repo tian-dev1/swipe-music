@@ -66,7 +66,7 @@ var api = express.Router();
  *                           type: string
  *                           format: date
  *                           example: "1990-01-01T00:00:00.000Z"
- *                         status:
+ *                         active:
  *                           type: boolean
  *                           example: true
  *                         _id:
@@ -182,7 +182,7 @@ api.post('/login', UserController.login);
  *               image:
  *                 type: string
  *                 example: https://example.com/images/john-doe.jpg
- *               status:
+ *               active:
  *                 type: boolean
  *                 example: true
  *     responses:
@@ -198,7 +198,7 @@ api.post('/login', UserController.login);
  *                   example: User created successfully
  *                 user:
  *                   type: object
- *                   example: { "name": "John", "lastName": "Doe", "email": "john.doe@example.com", "role": "user", "birthdate": "1990-01-01", "image": "https://example.com/images/john-doe.jpg", "status": true }
+ *                   example: { "name": "John", "lastName": "Doe", "email": "john.doe@example.com", "role": "user", "birthdate": "1990-01-01", "image": "https://example.com/images/john-doe.jpg", "active": true }
  *       400:
  *         description: Incorrect input data
  *         content:
@@ -230,7 +230,7 @@ api.post('/login', UserController.login);
  *                   type: string
  *                   example: Error processing request
  */
-api.post('/', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserController.register);
+api.post('/', UserController.register);
 /**
  * @swagger
  * /api/users/:
@@ -267,7 +267,7 @@ api.post('/', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserContro
  *                   image:
  *                     type: string
  *                     example: https://example.com/images/john-doe.jpg
- *                   status:
+ *                   active:
  *                     type: boolean
  *                     example: true
  *       401:
@@ -335,7 +335,7 @@ api.get('/', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserControl
  *                 image:
  *                   type: string
  *                   example: https://example.com/images/john-doe.jpg
- *                 status:
+ *                 active:
  *                   type: boolean
  *                   example: true
  *       401:
@@ -410,7 +410,7 @@ api.get('/:id', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserCont
  *               image:
  *                 type: string
  *                 example: https://example.com/images/john-doe.jpg
- *               status:
+ *               active:
  *                 type: boolean
  *                 example: true
  *     responses:
@@ -426,7 +426,7 @@ api.get('/:id', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserCont
  *                   example: "Successful operation"
  *                 user:
  *                   type: object
- *                   example: { "name": "John", "lastName": "Doe", "email": "john.doe@example.com", "role": "user", "birthdate": "1990-01-01", "image": "https://example.com/images/john-doe.jpg", "status": true }
+ *                   example: { "name": "John", "lastName": "Doe", "email": "john.doe@example.com", "role": "user", "birthdate": "1990-01-01", "image": "https://example.com/images/john-doe.jpg", "active": true }
  *       404:
  *         description: User not found
  *         content:

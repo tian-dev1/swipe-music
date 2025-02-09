@@ -5,8 +5,8 @@ module.exports = {
         INFO_SERVER_RUNNING: "🚀 Server running in port: ",
     },
     ROLES:{
-        ADMIN: "admin",
-        USER: "user"
+        ADMIN: "Admin",
+        USER: "User"
     },
     AUTH_MESSAGES: {
         ERROR_401: "Access denied. There is no token or it has expired",

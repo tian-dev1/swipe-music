@@ -23,7 +23,7 @@ beforeAll(async () => {
     password: hashedPassword,
     role: 'admin',
     birthdate: '1990-01-01',
-    status: true
+    active: true
   });
   const jwtSecret = process.env.JWT_SECRET || 'SWIPE_MUSIC';
   // Generar un token JWT para el usuario de prueba
@@ -50,7 +50,7 @@ describe('User Controller', () => {
         password: 'securepassword123',
         role: 'user',
         birthdate: '1990-01-01',
-        status: true
+        active: true
       });
     
     expect(res.statusCode).toEqual(201);
@@ -67,7 +67,7 @@ describe('User Controller', () => {
       password: 'securepassword123',
       role: 'user',
       birthdate: '1990-01-01',
-      status: true
+      active: true
     });
 
     const res = await request(app)
@@ -80,7 +80,7 @@ describe('User Controller', () => {
         password: 'securepassword123',
         role: 'user',
         birthdate: '1990-01-01',
-        status: true
+        active: true
       });
 
     expect(res.statusCode).toEqual(409);
@@ -96,7 +96,7 @@ describe('User Controller', () => {
       password: hashedPassword,
       role: 'user',
       birthdate: '1990-01-01',
-      status: true
+      active: true
     });
 
     const res = await request(app)
@@ -122,7 +122,7 @@ describe('User Controller', () => {
       password: hashedPassword,
       role: 'user',
       birthdate: '1990-01-01',
-      status: true
+      active: true
     });
 
     const res = await request(app)

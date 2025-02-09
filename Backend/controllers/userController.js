@@ -12,7 +12,7 @@ async function login(req, res) {
             return sendError(res, USER_MESSAGES.ERROR_400, 400);
         }
         // Buscar usuario por email
-        const user = await User.findOne({ email, status: true });
+        const user = await User.findOne({ email, active: true });
         if (!user) {
             return sendError(res, USER_MESSAGES.ERROR_404, 404);
         }
@@ -32,7 +32,7 @@ async function login(req, res) {
 // Register a new user
 async function register(req, res) {
     try {
-        const { name, lastName, email, password, role, birthdate, imagen, list, status } = req.body;
+        const { name, lastName, email, password, role, birthdate, imagen, list, active } = req.body;
         // Validar campos de entrada
         const validation = validateRegisterInput(name, lastName, email, password, role, birthdate);
         if (!validation.valid) {
@@ -58,7 +58,7 @@ async function register(req, res) {
             birthdate,
             imagen,
             list,
-            status
+            active
         });
 
         // Guardar en la base de datos

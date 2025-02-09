@@ -8,12 +8,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, required: true },
   birthdate: { type: Date, required: true },
   image: String,
-  list:[{
-    _id: false,
-    name: String,
-    songs:[]
-  }],
-  status: { type: Boolean, default: true },
+  active: { type: Boolean, default: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
