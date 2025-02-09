@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000', // Cambia esto según tu entorno
+        url: process.env.SERVER_URL || 'http://localhost:5000', // Usa la variable de entorno
         description: 'Servidor de desarrollo',
       },
     ],
@@ -37,7 +37,7 @@ const swaggerSpec = swaggerJSDoc(options);
 
 const swaggerDocs = (app) => {
   app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
-  console.log('📄 Swagger Docs available at: http://localhost:5000/api-docs');
+  console.log(`📄 Swagger Docs available at: ${process.env.SERVER_URL}/api-docs`);
 };
 
 module.exports = swaggerDocs;
