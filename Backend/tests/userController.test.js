@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const userRoutes = require('../routes/userRoutes');
-require('dotenv').config({ path: '.env.development' });
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
