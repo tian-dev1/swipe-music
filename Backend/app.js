@@ -7,6 +7,8 @@ const app = express();
 
 //Routes
 const userRoutes = require("./routes/userRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
+const productRoutes = require("./routes/productRoutes");
 
 // Middlewares
 app.use(express.json()); // Para leer JSON en las peticiones
@@ -19,7 +21,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/users", userRoutes);
-//app.use("/api/songs", songRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/products", productRoutes);
 
 // Configurar Swagger
 swaggerDocs(app);

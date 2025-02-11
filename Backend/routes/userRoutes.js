@@ -1,7 +1,9 @@
 const express = require('express');
 const UserController = require('../controllers/userController');
 const { authMiddleware, roleMiddleware } = require('../middlewares/auth');
-const CONSTTANTS = require('../utils/constants');
+const { validateLogin, validateRegister } = require('../utils/validators/userValidators');
+
+const CONSTANTS = require('../utils/constants');
 var api = express.Router();
 
 /**
@@ -136,7 +138,7 @@ var api = express.Router();
  *                   type: string
  *                   example: "Error processing request"
  */
-api.post('/login', UserController.login);
+api.post('/login', validateLogin, UserController.login);
 /**
  * @swagger
  * /api/users/:
@@ -230,7 +232,7 @@ api.post('/login', UserController.login);
  *                   type: string
  *                   example: Error processing request
  */
-api.post('/', UserController.register);
+api.post('/', validateRegister, UserController.register);
 /**
  * @swagger
  * /api/users/:
@@ -291,7 +293,7 @@ api.post('/', UserController.register);
  *                   type: string
  *                   example: "Error processing request"
  */
-api.get('/', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserController.list);
+api.get('/', authMiddleware, roleMiddleware(CONSTANTS.ROLES.ADMIN), UserController.list);
 /**
  * @swagger
  * /api/users/{id}:
@@ -369,7 +371,7 @@ api.get('/', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserControl
  *                   type: string
  *                   example: "Error processing request"
  */
-api.get('/:id', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserController.getById);
+api.get('/:id', authMiddleware, roleMiddleware(CONSTANTS.ROLES.ADMIN), UserController.getById);
 /**
  * @swagger
  * /api/users/{id}:
@@ -448,7 +450,7 @@ api.get('/:id', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserCont
  *                   type: string
  *                   example: "Error processing request"
  */
-api.put('/:id', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserController.update);
+api.put('/:id', validateRegister, authMiddleware, roleMiddleware(CONSTANTS.ROLES.ADMIN), UserController.update);
 /**
  * @swagger
  * /api/users/{id}:
@@ -495,7 +497,7 @@ api.put('/:id', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserCont
  *                   type: string
  *                   example: "Error processing request"
  */
-api.delete('/:id', authMiddleware, roleMiddleware(CONSTTANTS.ROLES.ADMIN), UserController.remove);
+api.delete('/:id', authMiddleware, roleMiddleware(CONSTANTS.ROLES.ADMIN), UserController.remove);
 
 //Exportar el módulo
 module.exports = api;

@@ -1,16 +1,11 @@
 const bcrypt = require("bcryptjs");
 const User = require('../models/user');
-const { sendSuccess, sendError, validateLoginInput, generateToken, sanitizeUser, validateRegisterInput, hashPassword } = require('../utils/utils');
+const { sendSuccess, sendError, generateToken, sanitizeUser, hashPassword } = require('../utils/utils');
 const { USER_MESSAGES } = require('../utils/constants');
 // Login
 async function login(req, res) {
     try {
         const { email, password } = req.body;
-        // Validar campos de entrada en el login
-        const validation = validateLoginInput(email, password);
-        if (!validation.valid) {
-            return sendError(res, USER_MESSAGES.ERROR_400, 400);
-        }
         // Buscar usuario por email
         const user = await User.findOne({ email, active: true });
         if (!user) {
@@ -33,11 +28,6 @@ async function login(req, res) {
 async function register(req, res) {
     try {
         const { name, lastName, email, password, role, birthdate, imagen, list, active } = req.body;
-        // Validar campos de entrada
-        const validation = validateRegisterInput(name, lastName, email, password, role, birthdate);
-        if (!validation.valid) {
-            return sendError(res, USER_MESSAGES.ERROR_400, 400);
-        }
 
         // Verificar si el usuario ya existe
         const existingUser = await User.findOne({ email });
