@@ -2,6 +2,8 @@ const bcrypt = require("bcryptjs");
 const User = require('../models/user');
 const { sendSuccess, sendError, generateToken, sanitizeUser, hashPassword } = require('../utils/utils');
 const { USER_MESSAGES } = require('../utils/constants');
+const path = require('path');
+const fs = require('fs');
 // Login
 async function login(req, res) {
     try {
@@ -89,13 +91,25 @@ async function update(req, res) {
         if (!user) {
             return sendError(res, USER_MESSAGES.ERROR_404, 404);
         }
+        
         // Recorrer las claves del body y actualizar solo las que existen
         Object.keys(req.body).forEach((key) => {
             if (req.body[key] !== undefined) {
                 user[key] = req.body[key];
             }
-            user.updatedAt = Date.now();
         });
+        
+        // Actualizar la imagen si se ha subido una nueva
+        if (req.file) {
+            // Eliminar la imagen anterior si existe
+            if (user.image) {
+                fs.unlinkSync(path.join(__dirname, '../uploads/users', user.image));
+            }
+            user.image = req.file.filename;
+        }
+
+        user.updatedAt = Date.now();
+
         await user.save();
         return sendSuccess(res, USER_MESSAGES.SUCCESS_200, { user: sanitizeUser(user) });
     } catch (err) {

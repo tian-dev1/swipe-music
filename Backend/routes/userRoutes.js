@@ -2,7 +2,7 @@ const express = require('express');
 const UserController = require('../controllers/userController');
 const { authMiddleware, roleMiddleware } = require('../middlewares/auth');
 const { validateLogin, validateRegister } = require('../utils/validators/userValidators');
-
+const upload = require('../middlewares/upload');
 const CONSTANTS = require('../utils/constants');
 var api = express.Router();
 
@@ -232,7 +232,7 @@ api.post('/login', validateLogin, UserController.login);
  *                   type: string
  *                   example: Error processing request
  */
-api.post('/', validateRegister, UserController.register);
+api.post('/', upload.single('image'), validateRegister, UserController.register);
 /**
  * @swagger
  * /api/users/:
@@ -450,7 +450,7 @@ api.get('/:id', authMiddleware, roleMiddleware(CONSTANTS.ROLES.ADMIN), UserContr
  *                   type: string
  *                   example: "Error processing request"
  */
-api.put('/:id', validateRegister, authMiddleware, roleMiddleware(CONSTANTS.ROLES.ADMIN), UserController.update);
+api.put('/:id', authMiddleware, roleMiddleware(CONSTANTS.ROLES.ADMIN), upload.single('image'), UserController.update);
 /**
  * @swagger
  * /api/users/{id}:
